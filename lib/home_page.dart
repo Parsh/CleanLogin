@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class HomePage extends StatelessWidget {
   static String tag = "home-page";
+
+  FirebaseUser user;
+  HomePage({@required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -9,11 +15,11 @@ class HomePage extends StatelessWidget {
   final profileImage = new Hero(
     tag: 'theHero',
     child: new Padding(
-      padding: new EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: new CircleAvatar(
-        radius: 72.0,
+        radius: 48.0,
         backgroundColor: Colors.transparent,
-        backgroundImage: new AssetImage("assets/alucard.jpg"),
+        child: new Image.network(user.photoUrl),
       ),
     ),
   );
@@ -21,15 +27,15 @@ class HomePage extends StatelessWidget {
   final welcome = new Padding(
     padding: new EdgeInsets.all(8.0),
     child: new Text(
-      "Welcome Parsh",
+      "Welcome ${user.displayName}",
       style: new TextStyle(color: Colors.white, fontSize: 28.0),
     ),
   );
 
   final lorem = new Padding(
     padding: new EdgeInsets.all(8.0),
-    child: new Text(
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi volutpat interdum est at imperdiet. Sed volutpat dignissim sollicitudin. Mauris dapibus risus vel urna iaculis dignissim. Phasellus eleifend in nulla ut pretium. Nam turpis dolor, dictum eu blandit ut, sodales sit amet nisi. Pellentesque feugiat mollis imperdiet.",
+    child: new Text( user.email,
+      //"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi volutpat interdum est at imperdiet. Sed volutpat dignissim sollicitudin. Mauris dapibus risus vel urna iaculis dignissim. Phasellus eleifend in nulla ut pretium. Nam turpis dolor, dictum eu blandit ut, sodales sit amet nisi. Pellentesque feugiat mollis imperdiet.",
       style: new TextStyle(color: Colors.white, fontSize: 18.0),
     ),
   );

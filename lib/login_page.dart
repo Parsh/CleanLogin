@@ -13,63 +13,57 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = new GoogleSignIn();
 
-  Future<FirebaseUser> signIn() async{
+  Future<FirebaseUser> signIn() async {
     GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
-    GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
+    GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
 
     FirebaseUser user = await firebaseAuth.signInWithGoogle(
-      idToken: googleSignInAuthentication.idToken,
-      accessToken: googleSignInAuthentication.accessToken
-    );
+        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleSignInAuthentication.accessToken);
     print("User Signed In: ${user.displayName}");
     return user;
   }
 
-  void signOut(){
+  void signOut() {
     googleSignIn.signOut();
     print("Signed Out");
   }
 
   @override
   Widget build(BuildContext context) {
-
     final logo = new Hero(
       tag: "theHero",
       child: new CircleAvatar(
-        backgroundColor: Colors.transparent,
-        radius: 48.0,
-        child: new Image.asset('assets/logo.png')
-      ),
+          backgroundColor: Colors.transparent,
+          radius: 48.0,
+          child: new Image.asset('assets/logo.png')),
     );
 
     final email = new TextFormField(
       keyboardType: TextInputType.emailAddress,
       autofocus: false,
       decoration: new InputDecoration(
-        hintText: 'Email',
-        contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: new OutlineInputBorder(
-          borderRadius: new BorderRadius.circular(32.0),
-        )
-      ),
+          hintText: 'Email',
+          contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+          border: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(32.0),
+          )),
     );
 
     final password = new TextFormField(
       autofocus: false,
       obscureText: true,
       decoration: new InputDecoration(
-        hintText: 'Password',
-        contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-        border: new OutlineInputBorder(
-          borderRadius: new BorderRadius.circular(32.0),
-        )
-      ),
+          hintText: 'Password',
+          contentPadding: new EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+          border: new OutlineInputBorder(
+            borderRadius: new BorderRadius.circular(32.0),
+          )),
     );
-
 
     final loginButton = new Padding(
       padding: new EdgeInsets.symmetric(vertical: 16.0),
@@ -80,19 +74,33 @@ class _LoginPageState extends State<LoginPage> {
         child: new MaterialButton(
           minWidth: 200.0,
           height: 42.0,
-          onPressed: (){
-            signIn();
-            //Navigator.of(context).pushNamed(HomePage.tag);
+          onPressed: () {
+            signIn()
+                .then((FirebaseUser user) => Navigator.of(context).push(
+                  new MaterialPageRoute(
+                    builder: (BuildContext context){
+                     return new HomePage(user: user);
+                    }
+                  )
+                ))
+                .catchError((e) => print(e));
+            //
           },
           color: Colors.lightBlueAccent,
-          child: new Text("Login", style: new TextStyle(color: Colors.white),),
+          child: new Text(
+            "Login",
+            style: new TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );
 
     final forgotLabel = new FlatButton(
-      child: new Text("Sign Out", style: new TextStyle(color: Colors.black54),),
-      onPressed: (){
+      child: new Text(
+        "Sign Out",
+        style: new TextStyle(color: Colors.black54),
+      ),
+      onPressed: () {
         signOut();
       },
     );
