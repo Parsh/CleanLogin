@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       title: "Clean Login",
       theme: new ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: "Nunito"
       ),
       routes: routes,
       home: new LoginPage(),
