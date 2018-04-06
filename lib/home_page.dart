@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,23 +15,83 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //final DocumentReference = Firestore.instance.document("myData/dummy1"); //Firestore.instance.collection("myData").document("dummy1");
+  Map<String, dynamic> myText;
+  StreamSubscription<DocumentSnapshot> streamSubscription;
+  final DocumentReference documentReference = Firestore.instance.document(
+      "myData/dummy1"); //Firestore.instance.collection("myData").document("dummy1");
 
-  void create(){
+  void create() {
+    Map<String, dynamic> data = <String, dynamic>{
+      "name": "Parshva Jain",
+      "passion": "Cosmology",
+    };
 
+    documentReference.setData(data).whenComplete(() {
+      print("Added Data");
+    }).catchError((e) {
+      print("An Error occured while adding: $e");
+    });
   }
 
-  void read(){
-
+  void read() {
+    // documentReference.get().then((documentSnapshot){
+    //   if(documentSnapshot.exists){
+    //     setState((){
+    //        myText = documentSnapshot.data;
+    //     });
+    //   } else {
+    //     setState((){
+    //       myText = null;
+    //     });
+    //   }
+    // }).catchError((e){
+    //   print("An Error occured while fetcing: $e");
+    // });
   }
 
-  void update(){
+  void update() {
+    Map<String, dynamic> data = <String, dynamic>{
+      "name": "Parshva Jain Updated",
+      "passion": "Cosmology Updated",
+    };
 
+    documentReference.updateData(data).whenComplete(() {
+      print("Updated Data");
+    }).catchError((e) {
+      print("An Error occured while updating: $e");
+    });
   }
 
-  void delete(){
-    
+  void delete() {
+    documentReference.delete().whenComplete((){
+      print("Deleted");
+    }).catchError((e) {
+      print("An Error occured while updating: $e");
+    });
   }
+
+  @override
+    void initState() {
+      super.initState();
+      //creating a stream for fetching/reading real time changes in the data (alternative to hardcalls that we make via read method to fetchd data)
+      streamSubscription = documentReference.snapshots.listen((documentSnapshot){
+      if(documentSnapshot.exists){
+        setState((){
+           myText = documentSnapshot.data;
+        });
+      } else {
+        setState((){
+          myText = null;
+        });
+      }
+    });
+    }
+
+    @override
+      void dispose() {
+        streamSubscription.cancel();
+        super.dispose();
+      }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +162,9 @@ class _HomePageState extends State<HomePage> {
               "Delete",
               style: new TextStyle(color: Colors.white, fontSize: 20.0),
             ),
-          )
+          ),
+          new SizedBox(height: 15.0),
+          myText == null? new Container(): new Container(child: new Text(myText['passion'], style: new TextStyle(fontSize: 20.0, color: Colors.white),),)
         ],
       ),
     );
